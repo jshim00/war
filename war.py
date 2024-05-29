@@ -82,40 +82,40 @@ class Game():
         while True:
 
             # Each player omits top 3 cards (face down) and places the 4th card face-up 
-            for i in contenders:
-                player = players[i] 
+            for id in contenders:
+                player = players[id] 
                 if len(player) >= 4: # If the player has 4 cards or more 
                     pawns = player[:4] # Add first four cards to storage 
                     sword = player[3] # Place the third card 
-                    players[i] = player[3:] # Remove all of these cards from the player 
+                    players[id] = player[3:] # Remove all of these cards from the player 
                 else: # If the player runs out of cards 
                     pawns = player # Add rest of player's hand 
                     sword = player[-1] # Place the last card  
-                    players[i] = [] # Removes all cards -- empty list 
+                    players[id] = [] # Removes all cards -- empty list 
                 
                 pile.extend(pawns) # Pile the pawn cards together
                 cardpool.append(sword) # Compute winner from this list 
             
             # If we do not have a winner, repeat 
             highest = max(cardpool) # Find the winner -- player with the highest value card 
-            winners = [i for i in range(n) if cardpool[i]==highest] # Check if there is a tie  
-
-            # winners = []
-            # for i in contenders:
-            #     player = players[i]
-
-
-
+            # winners = [i for i in range(n) if cardpool[i]==highest] # Check if there is a tie 
+            winners = [contenders[i] for i in range(len(contenders)) if cardpool[i] == highest] # Winner(s)
 
             if len(winners) == 1: # If there is a decisive winner, exit
                 players[winners[0]].extend(pile) 
                 players[winners[0]].extend(cardpool) 
                 break
             else: # No decisive winner - WAR AGAIN w/ remaining contenders 
+
+                # Remove eliminated players! 
+                for id in contenders:
+                    if players[id] == []:
+                        players.remove([]) 
+                        self.num_players -= 1 
+
                 pile.extend(cardpool) # Update burned pile
                 cardpool = [] # Reset cardpool 
                 contenders = winners 
-
                 
         # print(pile)
         # print(cardpool) 
@@ -178,4 +178,3 @@ class Game():
 
 war = Game(num_players = 8)
 war.playWar()
-
